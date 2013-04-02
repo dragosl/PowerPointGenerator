@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerPointGenerator", "PowerPointGenerator\PowerPointGenerator.csproj", "{FA11BA70-01EC-43A6-9E8D-845388D78747}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneratePptTest", "GeneratePptTest\GeneratePptTest.csproj", "{EE61654A-91C3-4A52-97CE-E7A84D386DDC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FA11BA70-01EC-43A6-9E8D-845388D78747}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA11BA70-01EC-43A6-9E8D-845388D78747}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA11BA70-01EC-43A6-9E8D-845388D78747}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA11BA70-01EC-43A6-9E8D-845388D78747}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE61654A-91C3-4A52-97CE-E7A84D386DDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE61654A-91C3-4A52-97CE-E7A84D386DDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE61654A-91C3-4A52-97CE-E7A84D386DDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE61654A-91C3-4A52-97CE-E7A84D386DDC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
