@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,9 +18,9 @@ namespace PowerPointGenerator.Managers
         #region Properties
 
         /// <summary>
-        /// Postgre SQL Connection
+        /// MSSQL Connection
         /// </summary>
-        private NpgsqlConnection Connection { get; set; }
+        private SqlConnection Connection { get; set; }
 
         /// <summary>
         /// Gets or sets the categories of the store.
@@ -38,7 +39,7 @@ namespace PowerPointGenerator.Managers
         /// </summary>
         public StoreManager(string connectionString)
         {
-            this.Connection = new NpgsqlConnection(connectionString);
+            this.Connection = new SqlConnection(connectionString);
             this.Sales = SqlHelper.GetSales(this.Connection);
         }
 

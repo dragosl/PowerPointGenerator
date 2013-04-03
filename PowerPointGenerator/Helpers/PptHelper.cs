@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,35 +26,38 @@ namespace PowerPointGenerator.Helpers
 
         public static void InsertSalesInTemplate(List<Sale> sales, string templatePath, string savedPptPath)
         {
-
-            //System.IO.FileStream fis = new System.IO.FileStream(templatePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            //Presentation pres = new Presentation(templatePath);
-            //fis.Close();
+            // write top 20 sales in the first textbox (textholder) of the first slide and rotate it by 90 degrees
+            System.IO.FileStream fis = new System.IO.FileStream(templatePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Presentation pres = new Presentation(templatePath);
-            Slides slides = pres.Slides;
+            fis.Close();
+            SlideCollection slides = pres.Slides;
             if (slides.Count > 0)
             {
-                Placeholders places = slides[0].Placeholders;
+                PlaceholderCollection places = slides[0].Placeholders;
                 if (places.Count > 0)
                 {
                     TextHolder text = places[0] as TextHolder;
                     if (text != null)
-                    {
-                        
+                    {                        
                         text.Text = string.Empty;
-                        foreach (Sale sale in sales)
+                        
+                        //foreach (Sale sale in sales)
+                        for (int i = 0; i < 2;i++ )
                         {
-                            text.Text += sale.ToString() + NewLineString;
+                            text.Text += sales[i].ToString() + NewLineString;
                         }
+
                         text.RotateTextBy90Degrees = true;
+                        text.FitTextToShape();
                     }
                 }
             }
 
+            // write the current date in all "places" which support text
             for (int i = 0; i < slides.Count; i++)
             {
                 // Set text for text frames
-                Shapes shapes = slides[i].Shapes;
+                ShapeCollection shapes = slides[i].Shapes;
                 for (int j = 0; j < shapes.Count; j++)
                 {
                     TextFrame tf = shapes[j].TextFrame;
@@ -63,6 +67,44 @@ namespace PowerPointGenerator.Helpers
                     }
                 }
             }
+
+            // add a new empty slide and append a note to it
+            Slide bodyslide = pres.AddBodySlide();
+            Notes notes = bodyslide.AddNotes();
+            notes.Text = "just a note";
+
+            Stream randomStreamForShapes = StreamHelper.GenerateRandomStream();
+
+            // add different shapes to notes - it seems this is not possible...
+            ShapeCollection notesShapes = notes.Shapes;
+            //notesShapes.Add(randomStreamForShapes);
+            //notesShapes.AddEllipse(0, 100, 100, 100);
+
+            // add chart?
+            //byte[] chartOleData = new byte[randomStreamForShapes.Length];
+            //randomStreamForShapes.Position = 0;
+            //randomStreamForShapes.Read(chartOleData, 0, chartOleData.Length);
+            //notesShapes.AddOleObjectFrame(0, 200, 100, 100, "Random class name", chartOleData);
+            //notesShapes.AddRectangle(0, 300, 100, 100);
+            //notesShapes.AddTable(0, 400, 100, 100, 5, 5);
+
+            // add a link to a background and append the link to the notes
+            Background background = bodyslide.Background;
+            Link bgLink = background.AddLink();
+            bgLink.Begin = 10;
+            bgLink.End = 20;
+            bgLink.SetExternalHyperlink("www.google.ro");
+            notes.Text += "background external link: " + bgLink.ExternalHyperlink;
+
+            ShapeCollection bodyslideShapes = bodyslide.Shapes;
+            //bodyslideShapes.Add(randomStreamForShapes);
+            bodyslideShapes.AddEllipse(0, 100, 200, 200);
+            byte[] chartOleData = new byte[randomStreamForShapes.Length];
+            randomStreamForShapes.Position = 0;
+            randomStreamForShapes.Read(chartOleData, 0, chartOleData.Length);
+            bodyslideShapes.AddOleObjectFrame(0, 420, 400, 400, "Random class name", chartOleData);
+            bodyslideShapes.AddRectangle(0, 830, 200, 200);
+            bodyslideShapes.AddTable(0, 1040, 200, 200, 5, 5);
 
             pres.Save(savedPptPath, Aspose.Slides.Export.SaveFormat.Ppt);
         }

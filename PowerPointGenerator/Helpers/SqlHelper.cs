@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace PowerPointGenerator.Helpers
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <exception cref="Exceptions.SqlException"></exception>
-        public static void OpenConnection(NpgsqlConnection connection)
+        public static void OpenConnection(SqlConnection connection)
         {
             try
             {
@@ -35,7 +36,7 @@ namespace PowerPointGenerator.Helpers
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <exception cref="Exceptions.SqlException"></exception>
-        public static void CloseConnection(NpgsqlConnection connection)
+        public static void CloseConnection(SqlConnection connection)
         {
             try
             {
@@ -52,29 +53,28 @@ namespace PowerPointGenerator.Helpers
         /// </summary>
         /// <param name="connection">The database connection.</param>
         /// <returns>The obtained sales.</returns>
-        public static List<Sale> GetSales(NpgsqlConnection connection)
+        public static List<Sale> GetSales(SqlConnection connection)
         {
             string sql = string.Empty;
             try
             {
                 OpenConnection(connection);
                 List<Sale> sales = new List<Sale>();
-                sql = "SELECT * FROM sale;";
+                sql = "SELECT * FROM Sales.Store;";
 
-                NpgsqlCommand command = new NpgsqlCommand(sql, connection);
-                NpgsqlDataReader dr = command.ExecuteReader();
+                SqlCommand command = new SqlCommand(sql, connection);
+                SqlDataReader dr = command.ExecuteReader();
 
                 while (dr.Read())
                 {
                     Sale sale = new Sale()
                     {
-                        ID = (int)dr["id"],
-                        Body=dr["body"].ToString(),
-                        Order=(int)dr["order"],
-                        Pieces=(int)dr["pieces"],
-                        Price=(int)dr["price"],
-                        Product=(int)dr["product"],
-                        Updated=(DateTime)dr["updated"]
+                        BusinessEntityID = (int)dr["BusinessEntityID"],
+                        Name = dr["Name"].ToString(),
+                        SalesPersonID = (int)dr["SalesPersonID"],
+                        Demographics = dr["Demographics"].ToString(),
+                        Rowguid = dr["Rowguid"].ToString(),
+                        ModifiedDate = (DateTime)dr["ModifiedDate"]
                     };
 
                     sales.Add(sale);

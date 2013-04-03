@@ -17,7 +17,7 @@ namespace PowerPointGenerator.Model
         /// <value>
         /// The ID.
         /// </value>
-        public int ID { get; set; }
+        public int BusinessEntityID { get; set; }
 
         /// <summary>
         /// Gets or sets the number of items of the sale.
@@ -25,7 +25,7 @@ namespace PowerPointGenerator.Model
         /// <value>
         /// The pieces.
         /// </value>
-        public int Pieces { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the body of this sale.
@@ -33,7 +33,7 @@ namespace PowerPointGenerator.Model
         /// <value>
         /// The body.
         /// </value>
-        public string Body { get; set; }
+        public int SalesPersonID { get; set; }
 
         /// <summary>
         /// Gets or sets the price of the sale.
@@ -41,15 +41,7 @@ namespace PowerPointGenerator.Model
         /// <value>
         /// The price.
         /// </value>
-        public int Price { get; set; }
-
-        /// <summary>
-        /// Gets or sets the date when this sale was updated.
-        /// </summary>
-        /// <value>
-        /// The updated.
-        /// </value>
-        public DateTime Updated { get; set; }
+        public string Demographics { get; set; }        
 
         /// <summary>
         /// Gets or sets the order to which this sale belongs.
@@ -57,20 +49,20 @@ namespace PowerPointGenerator.Model
         /// <value>
         /// The order.
         /// </value>
-        public int Order { get; set; }
+        public string Rowguid { get; set; }
 
         /// <summary>
-        /// Gets or sets the product which was sold.
+        /// Gets or sets the date when this sale was updated.
         /// </summary>
         /// <value>
-        /// The product.
+        /// The updated.
         /// </value>
-        public int Product { get; set; }
+        public DateTime ModifiedDate { get; set; }
 
         public override string ToString()
         {
-            return this.Body + " " + this.ID + " " + this.Order
-                + " " + this.Pieces + " " + this.Price + " " + this.Product + " " + this.Updated;
+            return this.BusinessEntityID + " " + this.Name + " " + this.SalesPersonID
+                + " " + this.Demographics + " " + this.Rowguid + " " + this.ModifiedDate;
         }
     }
 }

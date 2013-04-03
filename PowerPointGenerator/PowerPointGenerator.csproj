@@ -58,16 +58,21 @@
     <Compile Include="Exceptions\SqlException.cs" />
     <Compile Include="Helpers\PptHelper.cs" />
     <Compile Include="Helpers\SqlHelper.cs" />
+    <Compile Include="Helpers\StreamHelper.cs" />
     <Compile Include="Managers\StoreManager.cs" />
     <Compile Include="Model\Customer.cs" />
     <Compile Include="Model\Sale.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="k.jpg" />
     <Content Include="Libraries\Aspose.Slides.dll" />
     <Content Include="Libraries\Mono.Security.dll" />
     <Content Include="Libraries\Npgsql.dll" />
     <Content Include="Libraries\nunit.framework.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Libraries\Data\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
