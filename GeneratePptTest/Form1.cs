@@ -7,8 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using PowerPointGenerator.Helpers;
-using PowerPointGenerator.Managers;
+using GeneratePptTest.Business;
 
 namespace GeneratePptTest
 {
@@ -21,10 +20,14 @@ namespace GeneratePptTest
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string connectionString = ConfigHelper.GenerateConnectionStringMssql();
-            StoreManager store = new StoreManager(connectionString);
-            store.GeneratePpt(@"Templates\template.ppt", @"demoppt.ppt");
-            MessageBox.Show("Template file filled with data was stored as demoppt.ppt in the bin directory...");
+            if (Form1Manager.GeneratePpt(@"Templates\template.ppt", @"demoppt.ppt"))
+            {
+                MessageBox.Show("Template file filled with data was stored as demoppt.ppt in the bin directory...");
+            }
+            else
+            {
+                MessageBox.Show("Template generation failed. Some exception may have occured. Please verify that the template and the data are correct");
+            }
         }
     }
 }

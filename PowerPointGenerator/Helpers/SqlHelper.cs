@@ -91,6 +91,6 @@ namespace PowerPointGenerator.Helpers
             {
                 CloseConnection(connection);
             }
-        } 
+        }
     }
 }
