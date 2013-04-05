@@ -13,16 +13,35 @@ namespace GeneratePptTest
 {
     public partial class Form1 : Form
     {
+        /// <summary>
+        /// Gets or sets the template path.
+        /// </summary>
+        /// <value>
+        /// The template path.
+        /// </value>
+        string TemplatePath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the export PPT file path.
+        /// </summary>
+        /// <value>
+        /// The export PPT file path.
+        /// </value>
+        string ExportPptFilePath { get; set; }
+
         public Form1()
         {
             InitializeComponent();
+
+            this.TemplatePath = @"Templates\template.ppt";
+            this.ExportPptFilePath = @"D:\demoppt.ppt";
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (Form1Manager.GeneratePpt(@"Templates\template.ppt", @"demoppt.ppt"))
+            if (Form1Manager.GeneratePpt(this.TemplatePath, this.ExportPptFilePath))
             {
-                MessageBox.Show("Template file filled with data was stored as demoppt.ppt in the bin directory...");
+                MessageBox.Show("Template file filled with data was stored in " + this.ExportPptFilePath);
             }
             else
             {

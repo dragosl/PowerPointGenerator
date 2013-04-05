@@ -60,11 +60,11 @@ namespace PowerPointGenerator.Managers
         /// Generates the Ppt file based on a given template.
         /// </summary>
         /// <param name="templatePath">The pptx template path.</param>
+        /// <param name="exportPptFilePath">The export PPT file path.</param>
+        /// <returns></returns>
         public bool GeneratePpt(string templatePath, string exportPptFilePath)
         {
-            /* 
-             * use a ppt helper to return a ppt object with sales(or just dialog to save it)
-                */
+            // use a ppt helper to return a ppt object with sales(or just dialog to save it)                
             bool x = System.IO.File.Exists(templatePath);
             System.Diagnostics.Debug.Assert(x);
 

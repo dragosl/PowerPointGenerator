@@ -20,11 +20,6 @@ namespace UnitTests.PowerPointGeneratorTests
         SqlConnection connection;
 
         /// <summary>
-        /// The DB invalid connection.
-        /// </summary>
-        SqlConnection invalidConnection;
-
-        /// <summary>
         /// The sales number.
         /// </summary>
         int salesNumber;
