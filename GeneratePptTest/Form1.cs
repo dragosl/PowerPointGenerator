@@ -41,7 +41,7 @@ namespace GeneratePptTest
         {
             if (Form1Manager.GeneratePpt(this.TemplatePath, this.ExportPptFilePath))
             {
-                MessageBox.Show("Template file filled with data was stored in " + this.ExportPptFilePath);
+                MessageBox.Show("Template file filled with data was stored in " + this.ExportPptFilePath + "   PASSWORD is: asd");
             }
             else
             {

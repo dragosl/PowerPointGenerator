@@ -61,55 +61,16 @@ namespace PowerPointGenerator.Helpers
                 Slide titleSlide = presentation.AddTitleSlide();
 
                 // change the ppt file properties
-                ModifyPresentationProperties(presentation);                
+                ModifyPresentationProperties(presentation);
 
-                presentation.CloneSlide(doubleSlide, presentation.Slides.Count);
-                CommentAuthorCollection commentAuthors = presentation.CommentAuthors;
-                commentAuthors.AddAuthor("author2");
-                commentAuthors[0].ColorIndex = 0;
-
-                presentation.DeleteUnusedMasters();
-                presentation.EncryptDocumentProperties = true;
-                presentation.FirstSlideNumber = 0;
-
-                // add new font - constructor seems to be ambiguous
-                FontCollection fonts = presentation.Fonts;
-                FontEntity font = fonts[0];
-                fonts.Add(font);
-
-                presentation.GetSlideByPosition(0);
-                presentation.GetSlideById(258);
-                MainMaster master = presentation.MainMaster;
-                //master.ChangeMaster(presentation.GetSlideByPosition(1));
-                ExtraColorSchemeCollection colors = master.ExtraColorSchemes;
-                Shape shape = master.FindShape("shape1");
-                master.FollowMasterBackground = true;
-                master.FollowMasterObjects = true;
-                master.FollowMasterScheme = true;
-                SlideLayout layout = master.Layout;
-                master.Name = "master";
-
-                NamedSlideShowCollection namedSlides = presentation.NamedSlideShows;
-                namedSlides.Add("slideshow");
-                presentation.Password = "asd";
-                PictureBulletCollection bullets = presentation.PictureBullets;
-
-                // System.Drawing.* not found in .net 4.5
-                //bullets.Add(new PictureBullet(presentation, @"Templates\DownArrow.png"));
-                PictureCollection pictures = presentation.Pictures;
-
-                // System.Drawing.* not found in .net 4.5
-                //pictures.Add(new Picture(presentation, @"Templates\DownArrow.png"));
-
-                // System.Drawing.* not found in .net 4.5
-                //presentation.Print("printer name");
-                presentation.RemoveVBAMacros();
-                presentation.RemoveWriteProtection();
-
-                // other save options
+                // other save options - most used (pptx not supported yet, as for what they say)
+                // also supports Pps, Xps, Ppsx, Tiff, Odp, Pptm, Ppsm, Potx, Potm, PdfNotes, Html, TiffNotes but not exemplified here
                 presentation.Save(@"D:/demopptPDF.pdf", Aspose.Slides.Export.SaveFormat.Pdf);
+                //presentation.Save(@"D:/demopptx.pptx", Aspose.Slides.Export.SaveFormat.Pptx);
                 presentation.SetWriteProtection("asd");
-                // ... other presentation properties                
+
+                // this is like save but with less options - no other difference as for what is known so far
+                presentation.Write(savedPptPath);
 
                 // save file - open and save with user interaction not found yet in the library...
                 presentation.Save(savedPptPath, Aspose.Slides.Export.SaveFormat.Ppt);
@@ -180,23 +141,32 @@ namespace PowerPointGenerator.Helpers
         /// <param name="presentation">The presentation.</param>
         private static void ModifyPresentationProperties(Presentation presentation)
         {
-            presentation.DocumentProperties.Author = "fav";
-            presentation.DocumentProperties.Category = "categ";
-            presentation.DocumentProperties.Comments = "comm1";
-            presentation.DocumentProperties.Company = "comp1";
-            presentation.DocumentProperties.CreatedTime = new DateTime(2001, 1, 1);
-            presentation.DocumentProperties.TotalEditingTime = new TimeSpan(0, 0, 100);
-            presentation.DocumentProperties.HyperlinkBase = "www.bing.com";
-            presentation.DocumentProperties.Keywords = "key1";
-            presentation.DocumentProperties.LastSavedBy = "admin";
-            presentation.DocumentProperties.LastPrinted = new DateTime(2002, 2, 2);
-            presentation.DocumentProperties.LastSavedTime = new DateTime(2003, 3, 3);
-            presentation.DocumentProperties.Manager = "maneger1";
-            presentation.DocumentProperties.NameOfApplication = "app1";
-            presentation.DocumentProperties.RevisionNumber = 123;
-            presentation.DocumentProperties.Subject = "subj1";
-            presentation.DocumentProperties.Template = "new ppt";
-            presentation.DocumentProperties.Title = "Title1";
+            ModifyPresentationDocumentProperties(presentation);
+            ModifyPresentationCommentAuthors(presentation);        
+
+            presentation.DeleteUnusedMasters();
+            presentation.EncryptDocumentProperties = true;
+            presentation.FirstSlideNumber = 0;
+
+            ModifyPresentationFonts(presentation);
+            ModifyPresentationMaster(presentation);
+
+            NamedSlideShowCollection namedSlides = presentation.NamedSlideShows;
+            namedSlides.Add("slideshow");
+            presentation.Password = "asd";
+
+            ModifyPresentationPictures(presentation);
+            
+            // here a valid printer name should be set in order to work
+            //presentation.Print("printer name");
+            presentation.RemoveVBAMacros();
+            presentation.RemoveWriteProtection();
+
+            ModifyPresentationSettings(presentation);
+
+            presentation.SlideSize = new System.Drawing.Size(1024, 768);
+            presentation.SlideSizeType = SlideSizeType.A4Paper;
+            presentation.SlideViewType = SlideViewType.SlideShowFullScreen;
         }
 
         #endregion First level Private methods
@@ -306,15 +276,70 @@ namespace PowerPointGenerator.Helpers
         {
             ShapeCollection bodySlideShapes = bodySlide.Shapes;
             //bodySlideShapes.Add(randomStreamForShapes);
-            Ellipse ellipse = bodySlideShapes.AddEllipse(0, 100, 200, 200);
+            Ellipse ellipse = bodySlideShapes.AddEllipse(5500, 2500, 200, 200);
             var textframe =  ellipse.AddTextFrame("shape text");
             (ellipse as Shape).AlternativeText = "shape1";
+
+            // refactor here
+            AnimationSettings animationSettings = ellipse.AnimationSettings;
+            animationSettings.AdvanceMode = new ShapeAdvanceMode();
+            animationSettings.AdvanceTime = 10;
+            animationSettings.AfterEffect = ShapeAfterEffect.Dim;
+            animationSettings.AnimateBackground = true;
+            animationSettings.AnimateTextInReverse = true;
+            animationSettings.AnimationOrder = 0;
+            animationSettings.AnimationSlideCount = 0;
+            animationSettings.EntryEffect = ShapeEntryEffect.StretchRight;
+            animationSettings.TextLevelEffect = TextLevelEffect.AnimateByAllLevels;
+            animationSettings.TextUnitEffect = TextUnitEffect.AnimateByCharacter;
+
+            // refactor here
+            ellipse.ClearLink();
+            FillFormat fillFormat = ellipse.FillFormat;
+            fillFormat.BackColor = System.Drawing.Color.LightCyan;
+            fillFormat.ForeColor = System.Drawing.Color.DarkBlue;
+            fillFormat.GradientColorType = GradientColorType.TwoColors;
+            fillFormat.GradientDegree = 10;
+            fillFormat.GradientFillAngle = 30;
+            fillFormat.GradientFillFocus = 10;
+            fillFormat.GradientPreset = GradientPreset.CalmWater;
+            
+            // color blend configuration not known and default raises exception
+            //fillFormat.GradientStops = new System.Drawing.Drawing2D.ColorBlend();
+
+            fillFormat.GradientStyle = GradientStyle.FromCorner1;
+            fillFormat.PatternStyle = PatternStyle.DarkDownwardDiagonal;
+            fillFormat.RotateWithShape = true;
+            fillFormat.Type = FillType.Gradient;
+
+            // refactor here
+            ellipse.FlipHorizontal = true;
+            ellipse.FlipVertical = true;
+            ellipse.Height = 300;
+            ellipse.Hidden = false;
+            LineFormat format = ellipse.LineFormat;
+            format.BeginArrowheadLength = LineArrowheadLength.Medium;
+            format.BeginArrowheadStyle = LineArrowheadStyle.Diamond;
+            format.BeginArrowheadWidth = LineArrowheadWidth.Medium;
+            format.DashStyle = LineDashStyle.Dash;
+            format.EndArrowheadLength = LineArrowheadLength.Medium;
+            format.EndArrowheadStyle = LineArrowheadStyle.Triangle;
+            format.EndArrowheadWidth = LineArrowheadWidth.Medium;
+            format.ForeColor = System.Drawing.Color.AliceBlue;
+            format.JoinStyle = LineJoinStyle.JoinRound;
+            format.RoundEndCap = true;
+            format.ShowLines = true;
+            format.Style = LineStyle.ThinThin;
+            format.Width = 300;
+
+            // TODO: continue with ellipse/shape options, properties
+
             byte[] chartOleData = new byte[randomStreamForShapes.Length];
             randomStreamForShapes.Position = 0;
             randomStreamForShapes.Read(chartOleData, 0, chartOleData.Length);
-            bodySlideShapes.AddOleObjectFrame(0, 420, 400, 400, "Random class name", chartOleData);
-            bodySlideShapes.AddRectangle(0, 830, 200, 200);
-            bodySlideShapes.AddTable(0, 1040, 200, 200, 5, 5);
+            bodySlideShapes.AddOleObjectFrame(0, 720, 400, 400, "Random class name", chartOleData);
+            bodySlideShapes.AddRectangle(0, 1330, 200, 200);
+            bodySlideShapes.AddTable(0, 1740, 200, 200, 5, 5);
         }
 
         /// <summary>
@@ -324,16 +349,15 @@ namespace PowerPointGenerator.Helpers
         /// <param name="notes">The notes.</param>
         private static void ModifySlideHeaderFooter(Slide doubleSlide, Notes notes)
         {
-            // System.Drawing.Color is not found? in .net 4.5
-            //notes.Text = doubleSlide.GetSchemeColor(0).ToString();
-            //notes.Text += doubleSlide.GetThumbnail().ToString();
+            notes.Text = "GetSchemeColor " + doubleSlide.GetSchemeColor(0).ToString();
+            notes.Text += NewLineStringConstant + "GetThumbnail " + doubleSlide.GetThumbnail().ToString();
 
             doubleSlide.HeaderFooter.FooterText = "a";
             doubleSlide.HeaderFooter.HeaderText = "b";
             doubleSlide.HeaderFooter.DateTimeText = "vwsbuei";
             doubleSlide.HeaderFooter.PageNumberVisible = true;
             doubleSlide.HeaderFooter.ShowOnTitleSlide = true;
-            notes.Text += "HeaderFooter " + doubleSlide.HeaderFooter.ToString();
+            notes.Text += NewLineStringConstant + "HeaderFooter " + doubleSlide.HeaderFooter.ToString();
             notes.Text += NewLineStringConstant + "FooterText " + doubleSlide.HeaderFooter.FooterText;
             notes.Text += NewLineStringConstant + "HeaderText " + doubleSlide.HeaderFooter.HeaderText;
             notes.Text += NewLineStringConstant + "DateTimeText " + doubleSlide.HeaderFooter.DateTimeText;
@@ -356,11 +380,10 @@ namespace PowerPointGenerator.Helpers
             doubleSlide.Notes.Text += NewLineStringConstant + "notes accessed using property";
             notes.Text += NewLineStringConstant + "ParentPresentation " + doubleSlide.ParentPresentation.ToString();
 
-            // System.Drawing.Color is not found? in .net 4.5
-            //doubleSlide.SetSchemeColor(0, System.Drawing.Color.FromArgb(255, 0, 0));
-
-            // comment adding is not ok because System.Drawing.Point is not found
+            doubleSlide.SetSchemeColor(0, System.Drawing.Color.FromArgb(1, System.Drawing.Color.LightGray));
             CommentCollection comments = doubleSlide.SlideComments;
+
+            // obtaining a CommentAuthor object, used in the add method, is unknown
             //comments.AddComment(null, "JFK", "comment added", DateTime.Now, new System.Drawing.Point());
 
             notes.Text += NewLineStringConstant + "Comments " + comments.ToString();
@@ -389,6 +412,104 @@ namespace PowerPointGenerator.Helpers
             tags.Add("first tag", "the value of the first tag");
             notes.Text += NewLineStringConstant + "tags after add " + tags;
             notes.Text += NewLineStringConstant + "first tag " + tags["first tag"];
+        }
+
+        /// <summary>
+        /// Modifies the presentation document properties.
+        /// </summary>
+        /// <param name="presentation">The presentation.</param>
+        private static void ModifyPresentationDocumentProperties(Presentation presentation)
+        {
+            presentation.DocumentProperties.Author = "fav";
+            presentation.DocumentProperties.Category = "categ";
+            presentation.DocumentProperties.Comments = "comm1";
+            presentation.DocumentProperties.Company = "comp1";
+            presentation.DocumentProperties.CreatedTime = new DateTime(2001, 1, 1);
+            presentation.DocumentProperties.TotalEditingTime = new TimeSpan(0, 0, 100);
+            presentation.DocumentProperties.HyperlinkBase = "www.bing.com";
+            presentation.DocumentProperties.Keywords = "key1";
+            presentation.DocumentProperties.LastSavedBy = "admin";
+            presentation.DocumentProperties.LastPrinted = new DateTime(2002, 2, 2);
+            presentation.DocumentProperties.LastSavedTime = new DateTime(2003, 3, 3);
+            presentation.DocumentProperties.Manager = "maneger1";
+            presentation.DocumentProperties.NameOfApplication = "app1";
+            presentation.DocumentProperties.RevisionNumber = 123;
+            presentation.DocumentProperties.Subject = "subj1";
+            presentation.DocumentProperties.Template = "new ppt";
+            presentation.DocumentProperties.Title = "Title1";
+        }
+
+        /// <summary>
+        /// Modifies the presentation's comment authors.
+        /// </summary>
+        /// <param name="presentation">The presentation.</param>
+        private static void ModifyPresentationCommentAuthors(Presentation presentation)
+        {
+            presentation.CloneSlide(presentation.GetSlideByPosition(2), presentation.Slides.Count);
+            CommentAuthorCollection commentAuthors = presentation.CommentAuthors;
+            commentAuthors.AddAuthor("author2");
+            commentAuthors[0].ColorIndex = 0;
+        }
+
+        /// <summary>
+        /// Modifies the presentation's fonts.
+        /// </summary>
+        /// <param name="presentation">The presentation.</param>
+        private static void ModifyPresentationFonts(Presentation presentation)
+        {
+            // add new font - constructor seems to be ambiguous
+            FontCollection fonts = presentation.Fonts;
+            FontEntity font = fonts[0];
+            fonts.Add(font);
+        }
+
+        /// <summary>
+        /// Modifies the presentation master.
+        /// </summary>
+        /// <param name="presentation">The presentation.</param>
+        private static void ModifyPresentationMaster(Presentation presentation)
+        {
+            presentation.GetSlideByPosition(0);
+            presentation.GetSlideById(258);
+            MainMaster master = presentation.MainMaster;
+            //master.ChangeMaster(presentation.GetSlideByPosition(1));
+            ExtraColorSchemeCollection colors = master.ExtraColorSchemes;
+            Shape shape = master.FindShape("shape1");
+            master.FollowMasterBackground = true;
+            master.FollowMasterObjects = true;
+            master.FollowMasterScheme = true;
+            SlideLayout layout = master.Layout;
+            master.Name = "master";
+        }
+
+        /// <summary>
+        /// Modifies the presentation's pictures.
+        /// </summary>
+        /// <param name="presentation">The presentation.</param>
+        private static void ModifyPresentationPictures(Presentation presentation)
+        {
+            PictureBulletCollection bullets = presentation.PictureBullets;
+            bullets.Add(new PictureBullet(presentation, @"Templates\DownArrow.png"));
+            PictureCollection pictures = presentation.Pictures;
+            pictures.Add(new Picture(presentation, @"Templates\DownArrow.png"));
+        }
+
+        /// <summary>
+        /// Modifies the presentation's settings.
+        /// </summary>
+        /// <param name="presentation">The presentation.</param>
+        private static void ModifyPresentationSettings(Presentation presentation)
+        {
+            SlideShowSettings settings = presentation.SlideShowSettings;
+            settings.EndingSlide = 2;
+            settings.LoopUntilStopped = true;
+            settings.ManualAdvance = true;
+            settings.RangeType = SlideShowRangeType.ShowAll;
+            settings.ShowScrollbar = true;
+            settings.ShowType = SlideShowType.ShowTypeKiosk;
+            settings.ShowWithAnimation = true;
+            settings.ShowWithNarration = true;
+            settings.StartingSlide = 0;
         }
 
         #endregion Second level Private methods
