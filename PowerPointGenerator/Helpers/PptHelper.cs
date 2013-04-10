@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -164,7 +165,7 @@ namespace PowerPointGenerator.Helpers
 
             ModifyPresentationSettings(presentation);
 
-            presentation.SlideSize = new System.Drawing.Size(1024, 768);
+            presentation.SlideSize = new Size(1024, 768);
             presentation.SlideSizeType = SlideSizeType.A4Paper;
             presentation.SlideViewType = SlideViewType.SlideShowFullScreen;
         }
@@ -200,6 +201,13 @@ namespace PowerPointGenerator.Helpers
                         text.FitTextToShape();
                     }
                 }
+            }
+
+            PortionCollection portions = (slides[0].Placeholders[0] as TextHolder).Paragraphs[0].Portions;
+            foreach (Portion portion in portions)
+            {
+                portion.FontColor = Color.Green;
+                portion.FontHeight = 1;
             }
         }
 
@@ -272,74 +280,33 @@ namespace PowerPointGenerator.Helpers
             notes.Text += NewLineStringConstant + "background external link: " + bgLink.ExternalHyperlink;
         }
 
+        /// <summary>
+        /// Adds shapes to a slide.
+        /// </summary>
+        /// <param name="bodySlide">The slide.</param>
+        /// <param name="randomStreamForShapes">A random stream for shapes.</param>
         private static void AddShapesToSlide(Slide bodySlide, Stream randomStreamForShapes)
         {
             ShapeCollection bodySlideShapes = bodySlide.Shapes;
             //bodySlideShapes.Add(randomStreamForShapes);
             Ellipse ellipse = bodySlideShapes.AddEllipse(5500, 2500, 200, 200);
-            var textframe =  ellipse.AddTextFrame("shape text");
-            (ellipse as Shape).AlternativeText = "shape1";
+            ModifyEllipseAnimationSettings(ellipse);
+            ModifyEllipseFillFormat(ellipse);
+            ModifyEllipseLineFormat(ellipse);
+            ModifyEllipseShadowFormat(ellipse);
+            ModifyEllipseSingleLineProperties(ellipse);
 
-            // refactor here
-            AnimationSettings animationSettings = ellipse.AnimationSettings;
-            animationSettings.AdvanceMode = new ShapeAdvanceMode();
-            animationSettings.AdvanceTime = 10;
-            animationSettings.AfterEffect = ShapeAfterEffect.Dim;
-            animationSettings.AnimateBackground = true;
-            animationSettings.AnimateTextInReverse = true;
-            animationSettings.AnimationOrder = 0;
-            animationSettings.AnimationSlideCount = 0;
-            animationSettings.EntryEffect = ShapeEntryEffect.StretchRight;
-            animationSettings.TextLevelEffect = TextLevelEffect.AnimateByAllLevels;
-            animationSettings.TextUnitEffect = TextUnitEffect.AnimateByCharacter;
-
-            // refactor here
-            ellipse.ClearLink();
-            FillFormat fillFormat = ellipse.FillFormat;
-            fillFormat.BackColor = System.Drawing.Color.LightCyan;
-            fillFormat.ForeColor = System.Drawing.Color.DarkBlue;
-            fillFormat.GradientColorType = GradientColorType.TwoColors;
-            fillFormat.GradientDegree = 10;
-            fillFormat.GradientFillAngle = 30;
-            fillFormat.GradientFillFocus = 10;
-            fillFormat.GradientPreset = GradientPreset.CalmWater;
-            
-            // color blend configuration not known and default raises exception
-            //fillFormat.GradientStops = new System.Drawing.Drawing2D.ColorBlend();
-
-            fillFormat.GradientStyle = GradientStyle.FromCorner1;
-            fillFormat.PatternStyle = PatternStyle.DarkDownwardDiagonal;
-            fillFormat.RotateWithShape = true;
-            fillFormat.Type = FillType.Gradient;
-
-            // refactor here
-            ellipse.FlipHorizontal = true;
-            ellipse.FlipVertical = true;
-            ellipse.Height = 300;
-            ellipse.Hidden = false;
-            LineFormat format = ellipse.LineFormat;
-            format.BeginArrowheadLength = LineArrowheadLength.Medium;
-            format.BeginArrowheadStyle = LineArrowheadStyle.Diamond;
-            format.BeginArrowheadWidth = LineArrowheadWidth.Medium;
-            format.DashStyle = LineDashStyle.Dash;
-            format.EndArrowheadLength = LineArrowheadLength.Medium;
-            format.EndArrowheadStyle = LineArrowheadStyle.Triangle;
-            format.EndArrowheadWidth = LineArrowheadWidth.Medium;
-            format.ForeColor = System.Drawing.Color.AliceBlue;
-            format.JoinStyle = LineJoinStyle.JoinRound;
-            format.RoundEndCap = true;
-            format.ShowLines = true;
-            format.Style = LineStyle.ThinThin;
-            format.Width = 300;
-
-            // TODO: continue with ellipse/shape options, properties
-
+            // other options which repeat from ellipse were ommited
             byte[] chartOleData = new byte[randomStreamForShapes.Length];
             randomStreamForShapes.Position = 0;
             randomStreamForShapes.Read(chartOleData, 0, chartOleData.Length);
-            bodySlideShapes.AddOleObjectFrame(0, 720, 400, 400, "Random class name", chartOleData);
+            OleObjectFrame frame = bodySlideShapes.AddOleObjectFrame(0, 720, 400, 400, "Random class name", chartOleData);
+            ModifyOleObjectFrameProperties(frame);
+
             bodySlideShapes.AddRectangle(0, 1330, 200, 200);
-            bodySlideShapes.AddTable(0, 1740, 200, 200, 5, 5);
+
+            Table table = bodySlideShapes.AddTable(0, 1740, 200, 200, 5, 5);
+            ModifyTableProperties(table);
         }
 
         /// <summary>
@@ -380,7 +347,7 @@ namespace PowerPointGenerator.Helpers
             doubleSlide.Notes.Text += NewLineStringConstant + "notes accessed using property";
             notes.Text += NewLineStringConstant + "ParentPresentation " + doubleSlide.ParentPresentation.ToString();
 
-            doubleSlide.SetSchemeColor(0, System.Drawing.Color.FromArgb(1, System.Drawing.Color.LightGray));
+            doubleSlide.SetSchemeColor(0, Color.FromArgb(1, Color.LightGray));
             CommentCollection comments = doubleSlide.SlideComments;
 
             // obtaining a CommentAuthor object, used in the add method, is unknown
@@ -510,6 +477,163 @@ namespace PowerPointGenerator.Helpers
             settings.ShowWithAnimation = true;
             settings.ShowWithNarration = true;
             settings.StartingSlide = 0;
+        }
+
+        /// <summary>
+        /// Modifies the ellipse's animation settings.
+        /// </summary>
+        /// <param name="ellipse">The ellipse.</param>
+        private static void ModifyEllipseAnimationSettings(Ellipse ellipse)
+        {
+            AnimationSettings animationSettings = ellipse.AnimationSettings;
+            animationSettings.AdvanceMode = new ShapeAdvanceMode();
+            animationSettings.AdvanceTime = 10;
+            animationSettings.AfterEffect = ShapeAfterEffect.Dim;
+            animationSettings.AnimateBackground = true;
+            animationSettings.AnimateTextInReverse = true;
+            animationSettings.AnimationOrder = 0;
+            animationSettings.AnimationSlideCount = 0;
+            animationSettings.EntryEffect = ShapeEntryEffect.StretchRight;
+            animationSettings.TextLevelEffect = TextLevelEffect.AnimateByAllLevels;
+            animationSettings.TextUnitEffect = TextUnitEffect.AnimateByCharacter;
+        }
+
+        /// <summary>
+        /// Modifies the ellipse's fill format.
+        /// </summary>
+        /// <param name="ellipse">The ellipse.</param>
+        private static void ModifyEllipseFillFormat(Ellipse ellipse)
+        {
+            ellipse.ClearLink();
+            FillFormat fillFormat = ellipse.FillFormat;
+            fillFormat.BackColor = Color.LightCyan;
+            fillFormat.ForeColor = Color.DarkBlue;
+            fillFormat.GradientColorType = GradientColorType.TwoColors;
+            fillFormat.GradientDegree = 10;
+            fillFormat.GradientFillAngle = 30;
+            fillFormat.GradientFillFocus = 10;
+            fillFormat.GradientPreset = GradientPreset.CalmWater;
+
+            // color blend configuration not known and default raises exception
+            //fillFormat.GradientStops = new System.Drawing.Drawing2D.ColorBlend();
+
+            fillFormat.GradientStyle = GradientStyle.FromCorner1;
+            fillFormat.PatternStyle = PatternStyle.DarkDownwardDiagonal;
+            fillFormat.RotateWithShape = true;
+            fillFormat.Type = FillType.Gradient;
+        }
+
+        /// <summary>
+        /// Modifies the ellipse's line format.
+        /// </summary>
+        /// <param name="ellipse">The ellipse.</param>
+        private static void ModifyEllipseLineFormat(Ellipse ellipse)
+        {
+            LineFormat format = ellipse.LineFormat;
+            format.BeginArrowheadLength = LineArrowheadLength.Medium;
+            format.BeginArrowheadStyle = LineArrowheadStyle.Diamond;
+            format.BeginArrowheadWidth = LineArrowheadWidth.Medium;
+            format.DashStyle = LineDashStyle.Dash;
+            format.EndArrowheadLength = LineArrowheadLength.Medium;
+            format.EndArrowheadStyle = LineArrowheadStyle.Triangle;
+            format.EndArrowheadWidth = LineArrowheadWidth.Medium;
+            format.ForeColor = Color.AliceBlue;
+            format.JoinStyle = LineJoinStyle.JoinRound;
+            format.RoundEndCap = true;
+            format.ShowLines = true;
+            format.Style = LineStyle.ThinThin;
+            format.Width = 300;
+        }
+
+        /// <summary>
+        /// Modifies the ellipse's shadow format.
+        /// </summary>
+        /// <param name="ellipse">The ellipse.</param>
+        private static void ModifyEllipseShadowFormat(Ellipse ellipse)
+        {
+            ShadowFormat shadow = ellipse.ShadowFormat;
+            shadow.LightColor = Color.Chartreuse;
+            shadow.LightColorIndex = 0;
+            shadow.PerspectiveXNumerator = 1;
+            shadow.PerspectiveYNumerator = 1;
+            shadow.SecondShadowOffsetX = 1;
+            shadow.SecondShadowOffsetY = 1;
+            shadow.ShadowColor = Color.Cornsilk;
+            shadow.ShadowColorIndex = 1;
+            shadow.ShadowOffsetX = 1;
+            shadow.ShadowOffsetY = 1;
+            shadow.ShadowOriginX = 1;
+            shadow.ShadowOriginY = 1;
+            shadow.ShadowStyle = ShadowStyle.Style14;
+            shadow.ShadowTransformM11 = float.Epsilon;
+            shadow.ShadowTransformM12 = float.Epsilon;
+            shadow.ShadowTransformM21 = float.Epsilon;
+            shadow.ShadowTransformM22 = float.Epsilon;
+            shadow.Type = ShadowType.Double;
+            shadow.Visible = true;
+        }
+
+        /// <summary>
+        /// Modifies the ellipse's properties which can be set by a single line.
+        /// </summary>
+        /// <param name="ellipse">The ellipse.</param>
+        private static void ModifyEllipseSingleLineProperties(Ellipse ellipse)
+        {
+            var textframe = ellipse.AddTextFrame("shape text");
+            (ellipse as Shape).AlternativeText = "shape1";
+            ellipse.FlipHorizontal = true;
+            ellipse.FlipVertical = true;
+            ellipse.Height = 300;
+            ellipse.Hidden = false;
+            ellipse.Protection = new ShapeProtection();
+            ellipse.Rotation = 30;
+            System.Drawing.Rectangle rectangle = ellipse.ShapeRectangle;
+            ellipse.Width = 300;
+            ellipse.ZOrder(ZOrderCmd.BringForward);
+        }
+
+        /// <summary>
+        /// Modifies the OLE object frame's properties.
+        /// </summary>
+        /// <param name="frame">The frame.</param>
+        private static void ModifyOleObjectFrameProperties(OleObjectFrame frame)
+        {
+            frame.Brightness = 10;
+            frame.ColorType = PictureColorType.Grayscale;
+            frame.Contrast = 10;
+            frame.CropBottom = 20;
+            frame.CropLeft = 20;
+            frame.CropRight = 20;
+            frame.CropTop = 20;
+            frame.FlipHorizontal = true;
+            frame.FlipVertical = true;
+            frame.FollowColorScheme = OleFollowColorScheme.TextAndBackground;
+            frame.IsObjectIcon = true;
+            frame.PictureFileName = @"Templates\DownArrow.png";
+            frame.TransparentColor = Color.DarkCyan;
+        }
+
+        /// <summary>
+        /// Modifies the table's properties.
+        /// </summary>
+        /// <param name="table">The table.</param>
+        private static void ModifyTableProperties(Table table)
+        {
+            table.AddColumn();
+            table.AddRow();
+            table.AlternativeText = "table alt text";
+            table.DeleteColumn(table.ColumnsNumber - 1);
+            table.DeleteRow(table.RowsNumber - 1);
+            Cell cell = table.GetCell(1, 1);
+            TextFrame text = cell.TextFrame;
+            text.Text = "cell";
+            CellBorder border = cell.BorderBottom;
+            Point point = cell.BottomRightCell;
+            point = cell.TopLeftCell;
+            table.MergeCells(table.GetCell(1, 1), table.GetCell(1, 2));
+            table.SetBorders(5, Color.DarkGoldenrod);
+            table.SetColumnWidth(1, 20);
+            table.SetRowHeight(3, 100);
         }
 
         #endregion Second level Private methods
