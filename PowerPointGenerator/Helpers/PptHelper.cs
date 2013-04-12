@@ -189,25 +189,26 @@ namespace PowerPointGenerator.Helpers
                     TextHolder text = places[0] as TextHolder;
                     if (text != null)
                     {
-                        text.Text = string.Empty;
+                        Paragraph firstParagraph = text.Paragraphs[0];
+                        firstParagraph.Portions.Add(new Portion("Top 20 sales"));
+
+                        PortionCollection portions = (places[1] as TextHolder).Paragraphs[0].Portions;
 
                         //foreach (Sale sale in sales)
                         for (int i = 0; i < 20; i++)
                         {
-                            text.Text += sales[i].ToString() + NewLineStringConstant;
+                            portions.Add(new Portion(sales[i].ToString() + NewLineStringConstant));
+                            portions[i].FontColor = Color.Green;
+                            portions[i].FontHeight = 5;                            
                         }
+
+                        portions[portions.Count - 1].FontHeight = 5;
+                        portions[portions.Count - 1].FontColor = Color.Green;
 
                         text.RotateTextBy90Degrees = true;
                         text.FitTextToShape();
                     }
                 }
-            }
-
-            PortionCollection portions = (slides[0].Placeholders[0] as TextHolder).Paragraphs[0].Portions;
-            foreach (Portion portion in portions)
-            {
-                portion.FontColor = Color.Green;
-                portion.FontHeight = 1;
             }
         }
 
@@ -231,7 +232,7 @@ namespace PowerPointGenerator.Helpers
                         {
                             if (tf.Paragraphs[0].Portions.Count > 0)
                             {
-                                tf.Paragraphs[0].Portions[0].Text = System.DateTime.Now.ToShortDateString();
+                                tf.Paragraphs[0].Portions.Add(new Portion(DateTime.Now.ToShortDateString()));
                             }
                         }
                     }
