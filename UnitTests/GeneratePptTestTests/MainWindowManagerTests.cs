@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GeneratePptTest.Business;
+﻿using GeneratePptTest.Business;
 using NUnit.Framework;
 
 namespace UnitTests.GeneratePptTestTests
 {
     [TestFixture]
-    public class Form1ManagerTests
+    public class MainWindowManagerTests
     {
         /// <summary>
         /// The template path
@@ -44,7 +39,7 @@ namespace UnitTests.GeneratePptTestTests
         [Test]
         public void GeneratePptTest()
         {
-            Assert.IsTrue(Form1Manager.GeneratePpt(templatePath, savePptFilePath));
+            Assert.IsTrue(MainWindowManager.GeneratePpt(templatePath, savePptFilePath));
         }
 
         /// <summary>
@@ -53,7 +48,7 @@ namespace UnitTests.GeneratePptTestTests
         [Test]
         public void GeneratePptInvalidTemplateTest()
         {
-            Assert.IsFalse(Form1Manager.GeneratePpt(invalidTemplatePath, savePptFilePath));
+            Assert.IsFalse(MainWindowManager.GeneratePpt(invalidTemplatePath, savePptFilePath));
         }
     }
 }

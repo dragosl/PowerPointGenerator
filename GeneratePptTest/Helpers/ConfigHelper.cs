@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Nini.Config;
+﻿using Nini.Config;
 
-namespace PowerPointGenerator.Helpers
+namespace GeneratePptTest.Helpers
 {
     /// <summary>
     /// Class used for configurations.

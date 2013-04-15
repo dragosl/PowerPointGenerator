@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Aspose.Slides;
 using PowerPointGenerator.Model;
 
@@ -23,7 +20,9 @@ namespace PowerPointGenerator.Helpers
         /// <summary>
         /// String for component indent.
         /// </summary>
+        #pragma warning disable 169
         private const string ComponentExportIndentStringConstant = "\t- ";
+        #pragma warning restore 169
 
         /// <summary>
         /// Inserts the sales in the ppt template and other ppt operations.
@@ -37,7 +36,7 @@ namespace PowerPointGenerator.Helpers
             try
             {
                 // It seems Presentation constructor does not support pptx 2007 template files...
-                System.IO.FileStream file = new System.IO.FileStream(templatePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                FileStream file = new FileStream(templatePath, FileMode.Open, FileAccess.Read);
                 Presentation presentation = new Presentation(templatePath);
                 file.Close();
                 SlideCollection slides = presentation.Slides;
@@ -50,16 +49,16 @@ namespace PowerPointGenerator.Helpers
                 WriteDateEverywhere(slides);
 
                 // add a new empty slide and append a note and shapes to it
-                Slide bodySlide = AddBodySlide(presentation);
+                AddBodySlide(presentation);
 
                 // adds double slide - no difference from the last added one, as for what is known
                 // modify the slide's header,footer,position and other properties; add comments,transitions and tags; save as SVG
-                Slide doubleSlide = AddDoubleBodySlide(presentation);
+                AddDoubleBodySlide(presentation);
 
                 // add other types of slides
-                Slide emptySlide = presentation.AddEmptySlide();
-                Slide headerSlide = presentation.AddHeaderSlide();
-                Slide titleSlide = presentation.AddTitleSlide();
+                presentation.AddEmptySlide();
+                presentation.AddHeaderSlide();
+                presentation.AddTitleSlide();
 
                 // change the ppt file properties
                 ModifyPresentationProperties(presentation);
@@ -92,7 +91,7 @@ namespace PowerPointGenerator.Helpers
         /// </summary>
         /// <param name="presentation">The presentation.</param>
         /// <returns>The added slide</returns>
-        private static Slide AddBodySlide(Presentation presentation)
+        private static void AddBodySlide(Presentation presentation)
         {
             Stream randomStreamForShapes = StreamHelper.GenerateRandomStream();
 
@@ -104,8 +103,6 @@ namespace PowerPointGenerator.Helpers
 
             // add shapes to the newly added slide
             AddShapesToSlide(bodySlide, randomStreamForShapes);
-
-            return bodySlide;
         }
 
         /// <summary>
@@ -113,7 +110,7 @@ namespace PowerPointGenerator.Helpers
         /// </summary>
         /// <param name="presentation">The presentation.</param>
         /// /// <returns>The added slide</returns>
-        private static Slide AddDoubleBodySlide(Presentation presentation)
+        private static void AddDoubleBodySlide(Presentation presentation)
         {
             // adds double slide - no difference from the last added one, as for what is known
             Slide doubleSlide = presentation.AddDoubleBodySlide();
@@ -132,8 +129,6 @@ namespace PowerPointGenerator.Helpers
 
             // adds slide transitions and tags and show in notes
             AddSlideTransitionAndTags(doubleSlide, notes);
-
-            return doubleSlide;
         }
 
         /// <summary>
@@ -192,12 +187,12 @@ namespace PowerPointGenerator.Helpers
                         Paragraph firstParagraph = text.Paragraphs[0];
                         firstParagraph.Portions.Add(new Portion("Top 20 sales"));
 
-                        PortionCollection portions = (places[1] as TextHolder).Paragraphs[0].Portions;
+                        PortionCollection portions = ((TextHolder) places[1]).Paragraphs[0].Portions;
 
                         //foreach (Sale sale in sales)
                         for (int i = 0; i < 20; i++)
                         {
-                            portions.Add(new Portion(sales[i].ToString() + NewLineStringConstant));
+                            portions.Add(new Portion(sales[i] + NewLineStringConstant));
                             portions[i].FontColor = Color.Green;
                             portions[i].FontHeight = 5;                            
                         }
@@ -244,14 +239,20 @@ namespace PowerPointGenerator.Helpers
         /// Adds a new slide and note to it.
         /// </summary>
         /// <param name="presentation">The presentation.</param>
+        #pragma warning disable 1573
+        // ReSharper disable UnusedParameter.Local
         private static Slide AddNewSlideAndNote(Presentation presentation, Stream randomStreamForShapes)
+        // ReSharper restore UnusedParameter.Local
+        #pragma warning restore 1573
         {
             Slide bodySlide = presentation.AddBodySlide();
             Notes notes = bodySlide.AddNotes();
             notes.Text = "just a note";           
 
             // add different shapes to notes - it seems this is not possible...
+            #pragma warning disable 168
             ShapeCollection notesShapes = notes.Shapes;
+            #pragma warning restore 168
             //notesShapes.Add(randomStreamForShapes);
             //notesShapes.AddEllipse(0, 100, 100, 100);
 
@@ -318,14 +319,14 @@ namespace PowerPointGenerator.Helpers
         private static void ModifySlideHeaderFooter(Slide doubleSlide, Notes notes)
         {
             notes.Text = "GetSchemeColor " + doubleSlide.GetSchemeColor(0).ToString();
-            notes.Text += NewLineStringConstant + "GetThumbnail " + doubleSlide.GetThumbnail().ToString();
+            notes.Text += NewLineStringConstant + "GetThumbnail " + doubleSlide.GetThumbnail();
 
             doubleSlide.HeaderFooter.FooterText = "a";
             doubleSlide.HeaderFooter.HeaderText = "b";
             doubleSlide.HeaderFooter.DateTimeText = "vwsbuei";
             doubleSlide.HeaderFooter.PageNumberVisible = true;
             doubleSlide.HeaderFooter.ShowOnTitleSlide = true;
-            notes.Text += NewLineStringConstant + "HeaderFooter " + doubleSlide.HeaderFooter.ToString();
+            notes.Text += NewLineStringConstant + "HeaderFooter " + doubleSlide.HeaderFooter;
             notes.Text += NewLineStringConstant + "FooterText " + doubleSlide.HeaderFooter.FooterText;
             notes.Text += NewLineStringConstant + "HeaderText " + doubleSlide.HeaderFooter.HeaderText;
             notes.Text += NewLineStringConstant + "DateTimeText " + doubleSlide.HeaderFooter.DateTimeText;
@@ -344,9 +345,9 @@ namespace PowerPointGenerator.Helpers
         private static void AddSlideComments(Slide doubleSlide, Notes notes)
         {
             doubleSlide.Name = "sadf";
-            notes.Text += NewLineStringConstant + "Name " + doubleSlide.Name.ToString();
+            notes.Text += NewLineStringConstant + "Name " + doubleSlide.Name;
             doubleSlide.Notes.Text += NewLineStringConstant + "notes accessed using property";
-            notes.Text += NewLineStringConstant + "ParentPresentation " + doubleSlide.ParentPresentation.ToString();
+            notes.Text += NewLineStringConstant + "ParentPresentation " + doubleSlide.ParentPresentation;
 
             doubleSlide.SetSchemeColor(0, Color.FromArgb(1, Color.LightGray));
             CommentCollection comments = doubleSlide.SlideComments;
@@ -354,7 +355,7 @@ namespace PowerPointGenerator.Helpers
             // obtaining a CommentAuthor object, used in the add method, is unknown
             //comments.AddComment(null, "JFK", "comment added", DateTime.Now, new System.Drawing.Point());
 
-            notes.Text += NewLineStringConstant + "Comments " + comments.ToString();
+            notes.Text += NewLineStringConstant + "Comments " + comments;
             notes.Text += NewLineStringConstant + "SlideId " + doubleSlide.SlideId;
         }
 
@@ -441,6 +442,7 @@ namespace PowerPointGenerator.Helpers
             presentation.GetSlideById(258);
             MainMaster master = presentation.MainMaster;
             //master.ChangeMaster(presentation.GetSlideByPosition(1));
+            #pragma warning disable 168
             ExtraColorSchemeCollection colors = master.ExtraColorSchemes;
             Shape shape = master.FindShape("shape1");
             master.FollowMasterBackground = true;
@@ -448,6 +450,7 @@ namespace PowerPointGenerator.Helpers
             master.FollowMasterScheme = true;
             SlideLayout layout = master.Layout;
             master.Name = "master";
+            #pragma warning restore 168
         }
 
         /// <summary>
@@ -580,8 +583,9 @@ namespace PowerPointGenerator.Helpers
         /// <param name="ellipse">The ellipse.</param>
         private static void ModifyEllipseSingleLineProperties(Ellipse ellipse)
         {
+            #pragma warning disable 168
             var textframe = ellipse.AddTextFrame("shape text");
-            (ellipse as Shape).AlternativeText = "shape1";
+            ellipse.AlternativeText = "shape1";
             ellipse.FlipHorizontal = true;
             ellipse.FlipVertical = true;
             ellipse.Height = 300;
@@ -591,6 +595,7 @@ namespace PowerPointGenerator.Helpers
             System.Drawing.Rectangle rectangle = ellipse.ShapeRectangle;
             ellipse.Width = 300;
             ellipse.ZOrder(ZOrderCmd.BringForward);
+            #pragma warning restore 168
         }
 
         /// <summary>
@@ -628,13 +633,19 @@ namespace PowerPointGenerator.Helpers
             Cell cell = table.GetCell(1, 1);
             TextFrame text = cell.TextFrame;
             text.Text = "cell";
+            #pragma warning disable 168
             CellBorder border = cell.BorderBottom;
+            #pragma warning disable 219
             Point point = cell.BottomRightCell;
+            #pragma warning restore 219
+            // ReSharper disable RedundantAssignment
             point = cell.TopLeftCell;
+            // ReSharper restore RedundantAssignment
             table.MergeCells(table.GetCell(1, 1), table.GetCell(1, 2));
             table.SetBorders(5, Color.DarkGoldenrod);
             table.SetColumnWidth(1, 20);
             table.SetRowHeight(3, 100);
+            #pragma warning restore 168
         }
 
         #endregion Second level Private methods

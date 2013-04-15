@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Npgsql;
 using PowerPointGenerator.Model;
 
 namespace PowerPointGenerator.Helpers
@@ -55,7 +51,7 @@ namespace PowerPointGenerator.Helpers
         /// <returns>The obtained sales.</returns>
         public static List<Sale> GetSales(SqlConnection connection)
         {
-            string sql = string.Empty;
+            string sql;
             try
             {
                 OpenConnection(connection);
@@ -67,7 +63,7 @@ namespace PowerPointGenerator.Helpers
 
                 while (dr.Read())
                 {
-                    Sale sale = new Sale()
+                    Sale sale = new Sale
                     {
                         BusinessEntityID = (int)dr["BusinessEntityID"],
                         Name = dr["Name"].ToString(),

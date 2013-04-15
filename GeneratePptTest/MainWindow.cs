@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GeneratePptTest.Business;
 
@@ -39,13 +32,13 @@ namespace GeneratePptTest
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (Form1Manager.GeneratePpt(this.TemplatePath, this.ExportPptFilePath))
+            if (MainWindowManager.GeneratePpt(this.TemplatePath, this.ExportPptFilePath))
             {
-                MessageBox.Show("Template file filled with data was stored in " + this.ExportPptFilePath + "   PASSWORD is: asd");
+                MessageBox.Show(string.Format(Properties.Resources.TemplateGenerateOkMessage, this.ExportPptFilePath));
             }
             else
             {
-                MessageBox.Show("Template generation failed. Some exception may have occured. Please verify that the template and the data are correct");
+                MessageBox.Show(Properties.Resources.TemplateGenerateFailMessage);
             }
         }
     }

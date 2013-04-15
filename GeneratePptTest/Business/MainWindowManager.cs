@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PowerPointGenerator.Helpers;
+﻿using GeneratePptTest.Helpers;
 using PowerPointGenerator.Managers;
 
 namespace GeneratePptTest.Business
 {
-    public static class Form1Manager
+    public static class MainWindowManager
     {
         public static bool GeneratePpt(string templatePath, string exportPptFilePath)
         {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PowerPointGenerator.Model
+﻿namespace PowerPointGenerator.Model
 {
     /// <summary>
     /// Customer model class - holds data of a customer.

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GeneratePptTest.Helpers;
 using NUnit.Framework;
-using PowerPointGenerator.Helpers;
 using PowerPointGenerator.Managers;
 using PowerPointGenerator.Model;
 
@@ -17,7 +14,9 @@ namespace UnitTests.PowerPointGeneratorTests
         /// <summary>
         /// The DB valid connection.
         /// </summary>
+        // ReSharper disable NotAccessedField.Local
         SqlConnection connection;
+        // ReSharper restore NotAccessedField.Local
 
         /// <summary>
         /// The sales number.
@@ -125,7 +124,9 @@ namespace UnitTests.PowerPointGeneratorTests
         [ExpectedException(typeof(PowerPointGenerator.Exceptions.SqlException))]
         public void StoreConstructorSalesPropertyExceptionTest()
         {
+            #pragma warning disable 168
             StoreManager store = new StoreManager(invalidConnectionString);
+            #pragma warning restore 168
         }
 
         /// <summary>
